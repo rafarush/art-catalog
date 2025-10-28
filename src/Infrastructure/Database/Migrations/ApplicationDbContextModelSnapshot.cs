@@ -53,15 +53,8 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
                     b.HasKey("Id")
                         .HasName("pk_roles");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_roles_user_id");
 
                     b.ToTable("roles", "public");
                 });
@@ -177,12 +170,23 @@ namespace Infrastructure.Database.Migrations
                     b.ToTable("users", "public");
                 });
 
-            modelBuilder.Entity("Domain.Security.Role", b =>
+            modelBuilder.Entity("RoleUser", b =>
                 {
-                    b.HasOne("Domain.Users.User", null)
-                        .WithMany("Roles")
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("fk_roles_users_user_id");
+                    b.Property<Guid>("RolesId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("roles_id");
+
+                    b.Property<Guid>("UsersId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("users_id");
+
+                    b.HasKey("RolesId", "UsersId")
+                        .HasName("pk_role_user");
+
+                    b.HasIndex("UsersId")
+                        .HasDatabaseName("ix_role_user_users_id");
+
+                    b.ToTable("role_user", "public");
                 });
 
             modelBuilder.Entity("Domain.Todos.TodoItem", b =>
@@ -195,9 +199,21 @@ namespace Infrastructure.Database.Migrations
                         .HasConstraintName("fk_todo_items_users_user_id");
                 });
 
-            modelBuilder.Entity("Domain.Users.User", b =>
+            modelBuilder.Entity("RoleUser", b =>
                 {
-                    b.Navigation("Roles");
+                    b.HasOne("Domain.Security.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RolesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_role_user_roles_roles_id");
+
+                    b.HasOne("Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_role_user_users_users_id");
                 });
 #pragma warning restore 612, 618
         }
