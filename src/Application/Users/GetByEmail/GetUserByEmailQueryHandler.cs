@@ -1,6 +1,8 @@
 ﻿using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Application.Users.GetById;
+using Application.Users.Models.Output;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;

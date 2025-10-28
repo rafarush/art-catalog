@@ -8,7 +8,7 @@ public abstract class Entity
     
     public DateTime? Updated { get; set; }
     
-    public bool? IsDeleted { get; set; }
+    public bool IsDeleted { get; set; }
     
     private readonly List<IDomainEvent> _domainEvents = [];
 

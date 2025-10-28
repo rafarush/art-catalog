@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Messaging;
 using Application.Users.GetById;
+using Application.Users.Models.Output;
 using Domain.Security;
 using SharedKernel;
 using Web.Api.Extensions;

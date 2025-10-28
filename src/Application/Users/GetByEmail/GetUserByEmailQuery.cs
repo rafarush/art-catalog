@@ -1,4 +1,6 @@
 ﻿using Application.Abstractions.Messaging;
+using Application.Users.GetById;
+using Application.Users.Models.Output;
 
 namespace Application.Users.GetByEmail;
 
