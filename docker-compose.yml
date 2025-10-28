@@ -1,0 +1,50 @@
+services:
+  web-api:
+    image: ${DOCKER_REGISTRY-}webapi
+    container_name: web-api
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=clean-architecture;Username=postgres;Password=rafael@2004;
+      - ASPNETCORE_URLS=http://+:8080
+    build:
+      context: .
+      dockerfile: src/Web.Api/Dockerfile
+    ports:
+      - 5000:8080
+      - 5001:8081
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    environment:
+      - POSTGRES_DB=clean-architecture
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=rafael@2004
+    volumes:
+      - ./.containers/db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d clean-architecture" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - app-network
+
+  seq:
+    image: datalust/seq:2024.3
+    container_name: seq
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - 8081:80
+
+networks:
+  app-network:
+    driver: bridge

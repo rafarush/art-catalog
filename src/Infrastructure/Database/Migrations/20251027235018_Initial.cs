@@ -1,0 +1,123 @@
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace Infrastructure.Database.Migrations;
+
+/// <inheritdoc />
+public partial class Initial : Migration
+{
+    /// <inheritdoc />
+    protected override void Up(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.EnsureSchema(
+            name: "public");
+
+        migrationBuilder.CreateTable(
+            name: "users",
+            schema: "public",
+            columns: table => new
+            {
+                id = table.Column<Guid>(type: "uuid", nullable: false),
+                email = table.Column<string>(type: "text", nullable: false),
+                first_name = table.Column<string>(type: "text", nullable: false),
+                last_name = table.Column<string>(type: "text", nullable: false),
+                password_hash = table.Column<string>(type: "text", nullable: false),
+                created = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                is_deleted = table.Column<bool>(type: "boolean", nullable: true)
+            },
+            constraints: table => table.PrimaryKey("pk_users", x => x.id));
+
+        migrationBuilder.CreateTable(
+            name: "roles",
+            schema: "public",
+            columns: table => new
+            {
+                id = table.Column<Guid>(type: "uuid", nullable: false),
+                name = table.Column<string>(type: "text", nullable: false),
+                policies = table.Column<int[]>(type: "integer[]", nullable: false),
+                user_id = table.Column<Guid>(type: "uuid", nullable: true),
+                created = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                is_deleted = table.Column<bool>(type: "boolean", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("pk_roles", x => x.id);
+                table.ForeignKey(
+                    name: "fk_roles_users_user_id",
+                    column: x => x.user_id,
+                    principalSchema: "public",
+                    principalTable: "users",
+                    principalColumn: "id");
+            });
+
+        migrationBuilder.CreateTable(
+            name: "todo_items",
+            schema: "public",
+            columns: table => new
+            {
+                id = table.Column<Guid>(type: "uuid", nullable: false),
+                user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                description = table.Column<string>(type: "text", nullable: false),
+                due_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                labels = table.Column<List<string>>(type: "text[]", nullable: false),
+                is_completed = table.Column<bool>(type: "boolean", nullable: false),
+                created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                completed_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                priority = table.Column<int>(type: "integer", nullable: false),
+                created = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                is_deleted = table.Column<bool>(type: "boolean", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("pk_todo_items", x => x.id);
+                table.ForeignKey(
+                    name: "fk_todo_items_users_user_id",
+                    column: x => x.user_id,
+                    principalSchema: "public",
+                    principalTable: "users",
+                    principalColumn: "id",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateIndex(
+            name: "ix_roles_user_id",
+            schema: "public",
+            table: "roles",
+            column: "user_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_todo_items_user_id",
+            schema: "public",
+            table: "todo_items",
+            column: "user_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_users_email",
+            schema: "public",
+            table: "users",
+            column: "email",
+            unique: true);
+    }
+
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropTable(
+            name: "roles",
+            schema: "public");
+
+        migrationBuilder.DropTable(
+            name: "todo_items",
+            schema: "public");
+
+        migrationBuilder.DropTable(
+            name: "users",
+            schema: "public");
+    }
+}
